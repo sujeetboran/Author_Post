@@ -10,7 +10,10 @@ from django.shortcuts import redirect, render
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 import requests
+#for pagination
+#from django.core.paginator import Paginator, EmptyPage
 
+#costom responce class for givin response
 
 class CustomResponse():
     def successResponse(self, data, status=status.HTTP_200_OK, description="SUCCESS"):
@@ -30,6 +33,7 @@ class CustomResponse():
                 "description": description,
                 "info": data
             }, status=status)
+
 
 @api_view(['POST'])
 def register(request):
@@ -54,11 +58,14 @@ def login(request):
         else:
             return CustomResponse().errorResponse(description="wrong password")
 
+
 class posts(APIView):
     permission_classes = [AllowAny]
 
+    #pagination_class = CustomPagination
     def get(self, request, format=None):
 
+        #field for filtring
         title = request.data.get("title")
         author = request.data.get("author")
         sorting = request.data.get("sort")
@@ -76,6 +83,23 @@ class posts(APIView):
         # elif:
         else:
             posts = post.objects.all()
+
+        #pagination code
+        #field_names = [field.name for field in post._meta.get_fields()]
+        #paginator = Paginator(queryset, 10)
+        #print(offset)
+        #if int(offset)>paginator.num_pages :
+        #    return CustomResponse().errorResponse({},description="The page you are looking for doesnot exist")
+        #results = paginator.page(offset)
+        #output = []
+        #for result in results:
+        #    dic = {}
+        #    for i in range(len(field_names)):
+        #        dic[field_names[i]] = result[i]
+        #        # pass
+        #    output.append(dic)
+
+
 
         serializers = postSerializer(posts, many=True)
         try:
